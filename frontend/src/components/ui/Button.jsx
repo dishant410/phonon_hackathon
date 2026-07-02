@@ -1,46 +1,105 @@
 import React from 'react';
 
 const variants = {
-  primary: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/25',
-  secondary: 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600',
-  danger: 'bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/25',
-  ghost: 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700',
-  success: 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-500/25',
-  warning: 'bg-amber-500 hover:bg-amber-600 text-white',
+  primary: {
+    background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
+    color: '#fff',
+    border: 'none',
+    boxShadow: '0 4px 14px rgba(79,70,229,0.35)',
+  },
+  secondary: {
+    background: '#fff',
+    color: '#374151',
+    border: '1.5px solid #e2e8f0',
+    boxShadow: '0 1px 3px rgba(15,23,42,0.06)',
+  },
+  danger: {
+    background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+    color: '#fff',
+    border: 'none',
+    boxShadow: '0 4px 14px rgba(239,68,68,0.30)',
+  },
+  ghost: {
+    background: 'transparent',
+    color: '#64748b',
+    border: 'none',
+    boxShadow: 'none',
+  },
+  success: {
+    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+    color: '#fff',
+    border: 'none',
+    boxShadow: '0 4px 14px rgba(16,185,129,0.30)',
+  },
+  warning: {
+    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+    color: '#fff',
+    border: 'none',
+    boxShadow: '0 4px 12px rgba(245,158,11,0.25)',
+  },
+  outline: {
+    background: 'transparent',
+    color: '#4f46e5',
+    border: '1.5px solid #4f46e5',
+    boxShadow: 'none',
+  },
 };
 
 const sizes = {
-  xs: 'px-2.5 py-1.5 text-xs',
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-sm',
-  lg: 'px-5 py-2.5 text-base',
+  xs: { padding: '5px 11px',  fontSize: '11.5px', borderRadius: '7px' },
+  sm: { padding: '7px 14px',  fontSize: '12.5px', borderRadius: '8px' },
+  md: { padding: '9px 18px',  fontSize: '13.5px', borderRadius: '10px' },
+  lg: { padding: '11px 22px', fontSize: '14.5px', borderRadius: '11px' },
 };
 
 const Button = React.forwardRef(({
   children, variant = 'primary', size = 'md', loading = false,
-  disabled = false, icon: Icon, iconRight, className = '', ...props
+  disabled = false, icon: Icon, iconRight: IconRight,
+  className = '', style = {}, ...props
 }, ref) => {
+  const vs = variants[variant] || variants.primary;
+  const ss = sizes[size] || sizes.md;
+
   return (
-    <button
-      ref={ref}
-      disabled={disabled || loading}
-      className={`
-        inline-flex items-center justify-center gap-2 rounded-lg font-medium
-        transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
-        disabled:opacity-50 disabled:cursor-not-allowed
-        ${variants[variant]} ${sizes[size]} ${className}
-      `}
-      {...props}
-    >
-      {loading ? (
-        <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-        </svg>
-      ) : Icon && <Icon size={14} />}
-      {children}
-      {iconRight && !loading && <iconRight size={14} />}
-    </button>
+    <>
+      <button
+        ref={ref}
+        disabled={disabled || loading}
+        className={`sc-btn sc-btn--${variant} press ${className}`}
+        style={{ ...vs, ...ss, ...style }}
+        {...props}
+      >
+        {loading ? (
+          <svg style={{ width: 14, height: 14, animation: 'btnSpin 0.7s linear infinite', flexShrink: 0 }} fill="none" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.3" strokeWidth="3" />
+            <path fill="currentColor" opacity="0.8" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+        ) : Icon ? (
+          <Icon size={13} style={{ flexShrink: 0 }} />
+        ) : null}
+        {children}
+        {!loading && IconRight && <IconRight size={13} style={{ flexShrink: 0 }} />}
+      </button>
+      <style>{`
+        .sc-btn {
+          display: inline-flex; align-items: center; justify-content: center;
+          gap: 7px;
+          font-family: inherit;
+          font-weight: 600;
+          cursor: pointer;
+          white-space: nowrap;
+          letter-spacing: -0.01em;
+          transition: filter 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+          outline: none;
+        }
+        .sc-btn:hover:not(:disabled) { filter: brightness(1.07); }
+        .sc-btn:disabled { opacity: 0.55; cursor: not-allowed; filter: none; }
+        .sc-btn--ghost:hover:not(:disabled) { background: #f1f5f9 !important; filter: none; color: #4f46e5; }
+        .sc-btn--secondary:hover:not(:disabled) { background: #f8fafc !important; border-color: #c7d2fe !important; filter: none; }
+        .sc-btn--outline:hover:not(:disabled) { background: #eef2ff !important; filter: none; }
+        @keyframes btnSpin { to { transform: rotate(360deg); } }
+      `}</style>
+    </>
   );
 });
 

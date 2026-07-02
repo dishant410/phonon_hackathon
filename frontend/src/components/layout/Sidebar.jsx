@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 import {
-  LayoutDashboard, Shield, AlertTriangle, FileSearch, Lock, ScrollText,
-  Users, ChevronRight, ShieldCheck, X, Menu,
+  LayoutDashboard, Shield, AlertTriangle, FileSearch,
+  Lock, ScrollText, Users, ShieldCheck, PanelLeftClose, PanelLeftOpen,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const navItems = [
-  { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard', roles: ['admin', 'security_manager', 'auditor', 'employee'] },
-  { label: 'Risk Register', icon: AlertTriangle, to: '/risks', roles: ['admin', 'security_manager', 'auditor', 'employee'] },
-  { label: 'Controls', icon: Shield, to: '/controls', roles: ['admin', 'security_manager', 'auditor', 'employee'] },
-  { label: 'Audit Evidence', icon: FileSearch, to: '/audit', roles: ['admin', 'security_manager', 'auditor'] },
-  { label: 'Privacy', icon: Lock, to: '/privacy', roles: ['admin', 'security_manager', 'auditor'] },
-  { label: 'Policies', icon: ScrollText, to: '/policies', roles: ['admin', 'security_manager', 'auditor'] },
-  { label: 'User Management', icon: Users, to: '/admin/users', roles: ['admin'] },
+  { label: 'Dashboard',       icon: LayoutDashboard, to: '/dashboard',    roles: ['admin','security_manager','auditor','employee'] },
+  { label: 'Risk Register',   icon: AlertTriangle,   to: '/risks',         roles: ['admin','security_manager','auditor','employee'] },
+  { label: 'Controls',        icon: Shield,          to: '/controls',      roles: ['admin','security_manager','auditor','employee'] },
+  { label: 'Audit Evidence',  icon: FileSearch,      to: '/audit',         roles: ['admin','security_manager','auditor'] },
+  { label: 'Privacy (DPDP)', icon: Lock,            to: '/privacy',       roles: ['admin','security_manager','auditor'] },
+  { label: 'Policies',        icon: ScrollText,      to: '/policies',      roles: ['admin','security_manager','auditor'] },
+  { label: 'User Management', icon: Users,           to: '/admin/users',   roles: ['admin'] },
 ];
 
 const NavItem = ({ item, collapsed }) => {
@@ -23,23 +23,13 @@ const NavItem = ({ item, collapsed }) => {
   return (
     <NavLink
       to={item.to}
-      className={({ isActive }) => `
-        flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-        transition-all duration-150 group
-        ${isActive
-          ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 hover:text-slate-900 dark:hover:text-slate-100'
-        }
-      `}
       title={collapsed ? item.label : undefined}
+      className={({ isActive }) => `sb-nav-item ${isActive ? 'sb-nav-item--active' : ''} ${collapsed ? 'sb-nav-item--collapsed' : ''}`}
     >
-      <item.icon size={18} className="flex-shrink-0" />
-      {!collapsed && (
-        <>
-          <span className="flex-1 truncate">{item.label}</span>
-          <ChevronRight size={14} className="opacity-0 group-hover:opacity-60 transition-opacity" />
-        </>
-      )}
+      <span className="sb-nav-item__icon">
+        <item.icon size={17} />
+      </span>
+      {!collapsed && <span className="sb-nav-item__label">{item.label}</span>}
     </NavLink>
   );
 };
@@ -47,53 +37,217 @@ const NavItem = ({ item, collapsed }) => {
 const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
   return (
     <>
-      {/* Mobile Overlay */}
+      {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
           onClick={() => setMobileOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 30,
+            background: 'rgba(15,23,42,0.35)',
+            backdropFilter: 'blur(4px)',
+          }}
+          className="lg:hidden"
         />
       )}
 
-      {/* Sidebar */}
-      <aside className={`
-        fixed top-0 left-0 h-full z-40 flex flex-col
-        bg-white dark:bg-slate-900
-        border-r border-slate-200 dark:border-slate-700/50
-        transition-all duration-300 ease-in-out
-        ${collapsed ? 'w-16' : 'w-64'}
-        ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}>
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-4 py-5 border-b border-slate-200 dark:border-slate-700/50">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-indigo-500/30">
-            <ShieldCheck size={16} className="text-white" />
+      <aside className={`sb-root ${mobileOpen ? 'sb-root--open' : 'sb-root--closed'} ${collapsed ? 'sb-root--collapsed' : ''}`}>
+        {/* Logo / Brand */}
+        <div className="sb-brand">
+          <div className="sb-brand__icon">
+            <ShieldCheck size={17} color="#4f46e5" />
           </div>
           {!collapsed && (
-            <div className="overflow-hidden">
-              <p className="text-sm font-bold text-slate-900 dark:text-slate-100">SecureComply</p>
-              <p className="text-xs text-slate-400">Enterprise GRC Platform</p>
+            <div className="sb-brand__text">
+              <span className="sb-brand__name">SecureComply</span>
+              <span className="sb-brand__sub">GRC Platform</span>
             </div>
           )}
         </div>
 
+        {/* Nav section label */}
+        {!collapsed && <p className="sb-section-label">Menu</p>}
+
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-          {navItems.map((item) => (
-            <NavItem key={item.to} item={item} collapsed={collapsed} />
+        <nav className="sb-nav">
+          {navItems.map((item, i) => (
+            <div
+              key={item.to}
+              className="slide-in"
+              style={{ animationDelay: `${i * 0.04}s` }}
+            >
+              <NavItem item={item} collapsed={collapsed} />
+            </div>
           ))}
         </nav>
 
-        {/* Collapse Toggle (desktop only) */}
-        <div className="hidden lg:flex items-center justify-end px-3 py-3 border-t border-slate-200 dark:border-slate-700/50">
+        {/* Footer: collapse toggle */}
+        <div className="sb-footer">
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            className="sb-collapse-btn"
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            <Menu size={16} />
+            {collapsed
+              ? <PanelLeftOpen size={16} />
+              : <><PanelLeftClose size={16} /><span>Collapse</span></>
+            }
           </button>
         </div>
       </aside>
+
+      <style>{`
+        .sb-root {
+          position: fixed;
+          top: 0; left: 0;
+          height: 100%;
+          z-index: 40;
+          display: flex;
+          flex-direction: column;
+          background: #ffffff;
+          border-right: 1px solid #e8edf5;
+          box-shadow: 4px 0 24px rgba(15,23,42,0.05);
+          transition: width 0.28s cubic-bezier(0.4,0,0.2,1),
+                      transform 0.28s cubic-bezier(0.4,0,0.2,1);
+          overflow: hidden;
+        }
+        .sb-root--closed { transform: translateX(-100%); }
+        .sb-root--open   { transform: translateX(0); }
+        .sb-root--collapsed { width: 68px; }
+        :not(.sb-root--collapsed).sb-root { width: 240px; }
+        @media (min-width: 1024px) {
+          .sb-root--closed  { transform: translateX(0); }
+        }
+
+        /* Brand */
+        .sb-brand {
+          display: flex;
+          align-items: center;
+          gap: 11px;
+          padding: 18px 16px 16px;
+          border-bottom: 1px solid #f1f5f9;
+          flex-shrink: 0;
+        }
+        .sb-brand__icon {
+          width: 36px; height: 36px;
+          background: #eef2ff;
+          border-radius: 10px;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0;
+          border: 1.5px solid #e0e7ff;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .sb-brand__icon:hover {
+          transform: scale(1.08);
+          box-shadow: 0 4px 12px rgba(79,70,229,0.20);
+        }
+        .sb-brand__name {
+          display: block;
+          font-size: 14px; font-weight: 700;
+          color: #0f172a; letter-spacing: -0.02em;
+          white-space: nowrap;
+        }
+        .sb-brand__sub {
+          display: block;
+          font-size: 10px; font-weight: 600;
+          color: #94a3b8;
+          text-transform: uppercase; letter-spacing: 0.08em;
+          margin-top: 1px;
+        }
+
+        /* Section label */
+        .sb-section-label {
+          font-size: 10px; font-weight: 700;
+          color: #cbd5e1;
+          text-transform: uppercase; letter-spacing: 0.10em;
+          padding: 16px 18px 6px;
+          flex-shrink: 0;
+        }
+
+        /* Nav */
+        .sb-nav {
+          flex: 1;
+          overflow-y: auto;
+          padding: 4px 10px 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        /* Nav item */
+        .sb-nav-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 9px 11px;
+          border-radius: 10px;
+          font-size: 13.5px;
+          font-weight: 500;
+          color: #64748b;
+          text-decoration: none;
+          transition: all 0.15s ease;
+          white-space: nowrap;
+          position: relative;
+          overflow: hidden;
+        }
+        .sb-nav-item::before {
+          content: '';
+          position: absolute;
+          left: 0; top: 50%;
+          transform: translateY(-50%) scaleY(0);
+          width: 3px; height: 65%;
+          background: #4f46e5;
+          border-radius: 0 3px 3px 0;
+          transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .sb-nav-item:hover {
+          background: #f8fafc;
+          color: #1e293b;
+        }
+        .sb-nav-item--active {
+          background: #eef2ff;
+          color: #4f46e5;
+          font-weight: 600;
+        }
+        .sb-nav-item--active::before {
+          transform: translateY(-50%) scaleY(1);
+        }
+        .sb-nav-item__icon {
+          display: flex; align-items: center; justify-content: center;
+          width: 20px; height: 20px; flex-shrink: 0;
+        }
+        .sb-nav-item__label {
+          flex: 1;
+          overflow: hidden; text-overflow: ellipsis;
+        }
+        .sb-nav-item--collapsed {
+          justify-content: center;
+          padding: 10px;
+        }
+
+        /* Footer */
+        .sb-footer {
+          border-top: 1px solid #f1f5f9;
+          padding: 10px;
+          flex-shrink: 0;
+        }
+        .sb-collapse-btn {
+          display: flex; align-items: center; gap: 8px;
+          width: 100%;
+          padding: 8px 10px;
+          border-radius: 8px;
+          border: none;
+          background: transparent;
+          color: #94a3b8;
+          font-size: 13px; font-weight: 500;
+          cursor: pointer;
+          font-family: inherit;
+          transition: all 0.15s;
+        }
+        .sb-collapse-btn:hover {
+          background: #f8fafc;
+          color: #4f46e5;
+        }
+      `}</style>
     </>
   );
 };

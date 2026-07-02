@@ -1,130 +1,183 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+const T_STYLE = `
+  .sc-tbl-wrap {
+    overflow-x: auto;
+    border-radius: 14px;
+    border: 1px solid #e8edf5;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(15,23,42,0.04);
+  }
+  .sc-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  .sc-tbl thead {
+    background: #f8fafc;
+    border-bottom: 1px solid #e8edf5;
+  }
+  .sc-tbl thead th {
+    padding: 11px 16px;
+    text-align: left;
+    font-size: 11px; font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .sc-tbl tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.12s ease;
+  }
+  .sc-tbl tbody tr:last-child { border-bottom: none; }
+  .sc-tbl tbody tr:hover { background: #fafbff; }
+  .sc-tbl tbody tr.sc-tbl__clickable { cursor: pointer; }
+  .sc-tbl tbody tr.sc-tbl__clickable:hover { background: #f5f7ff; }
+  .sc-tbl tbody td {
+    padding: 12px 16px;
+    color: #475569;
+    vertical-align: middle;
+  }
+
+  /* Empty state */
+  .sc-tbl-empty {
+    padding: 56px 24px;
+    text-align: center;
+    color: #94a3b8;
+  }
+  .sc-tbl-empty svg { opacity: 0.3; margin: 0 auto 14px; display: block; }
+  .sc-tbl-empty p { font-size: 13.5px; }
+
+  /* Pagination */
+  .sc-pg {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 10px;
+    margin-top: 16px; padding: 0 4px;
+  }
+  @media (min-width: 640px) {
+    .sc-pg { flex-direction: row; justify-content: space-between; }
+  }
+  .sc-pg__info { font-size: 12.5px; color: #94a3b8; }
+  .sc-pg__btns { display: flex; align-items: center; gap: 4px; }
+  .sc-pg-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    background: #fff;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 12.5px; font-weight: 600;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .sc-pg-btn:hover:not(:disabled) {
+    border-color: #c7d2fe; background: #eef2ff; color: #4f46e5;
+  }
+  .sc-pg-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .sc-pg-btn--active {
+    background: linear-gradient(135deg,#4f46e5,#6366f1) !important;
+    color: #fff !important; border-color: transparent !important;
+    box-shadow: 0 3px 10px rgba(79,70,229,0.30);
+  }
+`;
+
 const Table = ({ columns, data, loading, emptyMessage = 'No records found', onRowClick }) => {
   if (loading) return <TableSkeleton cols={columns.length} />;
-
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700">
-            {columns.map((col) => (
-              <th
-                key={col.key}
-                className={`px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider ${col.className || ''}`}
-              >
-                {col.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
-          {data.length === 0 ? (
-            <tr>
-              <td colSpan={columns.length} className="px-4 py-12 text-center text-slate-400 dark:text-slate-500">
-                <div className="flex flex-col items-center gap-2">
-                  <svg className="w-10 h-10 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                  <span className="text-sm">{emptyMessage}</span>
-                </div>
-              </td>
-            </tr>
-          ) : (
-            data.map((row, i) => (
+    <>
+      <div className="sc-tbl-wrap">
+        <table className="sc-tbl">
+          <thead>
+            <tr>{columns.map(col => <th key={col.key} className={col.className || ''}>{col.label}</th>)}</tr>
+          </thead>
+          <tbody>
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length}>
+                  <div className="sc-tbl-empty">
+                    <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    <p>{emptyMessage}</p>
+                  </div>
+                </td>
+              </tr>
+            ) : data.map((row, i) => (
               <tr
                 key={row._id || i}
                 onClick={() => onRowClick?.(row)}
-                className={`
-                  bg-white dark:bg-slate-800
-                  hover:bg-slate-50 dark:hover:bg-slate-700/50
-                  transition-colors duration-100
-                  ${onRowClick ? 'cursor-pointer' : ''}
-                `}
+                className={onRowClick ? 'sc-tbl__clickable' : ''}
               >
-                {columns.map((col) => (
-                  <td key={col.key} className={`px-4 py-3.5 text-slate-700 dark:text-slate-300 ${col.cellClassName || ''}`}>
+                {columns.map(col => (
+                  <td key={col.key} className={col.cellClassName || ''}>
                     {col.render ? col.render(row[col.key], row) : (row[col.key] ?? '—')}
                   </td>
                 ))}
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <style>{T_STYLE}</style>
+    </>
   );
 };
 
 export const Pagination = ({ page, pages, total, limit, onPageChange }) => {
   if (pages <= 1) return null;
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 px-1">
-      <p className="text-sm text-slate-500 dark:text-slate-400">
-        Showing {Math.min((page - 1) * limit + 1, total)}–{Math.min(page * limit, total)} of {total}
-      </p>
-      <div className="flex items-center gap-1">
-        <button
-          onClick={() => onPageChange(page - 1)}
-          disabled={page <= 1}
-          className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        >
-          <ChevronLeft size={16} />
-        </button>
-        {Array.from({ length: Math.min(pages, 5) }, (_, i) => {
-          const pageNum = i + 1;
-          return (
+    <>
+      <div className="sc-pg">
+        <p className="sc-pg__info">
+          Showing {Math.min((page - 1) * limit + 1, total)}–{Math.min(page * limit, total)} of {total}
+        </p>
+        <div className="sc-pg__btns">
+          <button onClick={() => onPageChange(page - 1)} disabled={page <= 1} className="sc-pg-btn">
+            <ChevronLeft size={14} />
+          </button>
+          {Array.from({ length: Math.min(pages, 7) }, (_, i) => i + 1).map(n => (
             <button
-              key={pageNum}
-              onClick={() => onPageChange(pageNum)}
-              className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
-                page === pageNum
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
-              }`}
+              key={n}
+              onClick={() => onPageChange(n)}
+              className={`sc-pg-btn ${page === n ? 'sc-pg-btn--active' : ''}`}
             >
-              {pageNum}
+              {n}
             </button>
-          );
-        })}
-        <button
-          onClick={() => onPageChange(page + 1)}
-          disabled={page >= pages}
-          className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        >
-          <ChevronRight size={16} />
-        </button>
+          ))}
+          <button onClick={() => onPageChange(page + 1)} disabled={page >= pages} className="sc-pg-btn">
+            <ChevronRight size={14} />
+          </button>
+        </div>
       </div>
-    </div>
+      <style>{T_STYLE}</style>
+    </>
   );
 };
 
 const TableSkeleton = ({ cols }) => (
-  <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
-    <table className="w-full text-sm">
-      <thead>
-        <tr className="bg-slate-50 dark:bg-slate-900/50">
-          {Array.from({ length: cols }).map((_, i) => (
-            <th key={i} className="px-4 py-3">
-              <div className="h-3 w-20 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
-            </th>
+  <>
+    <div className="sc-tbl-wrap">
+      <table className="sc-tbl">
+        <thead>
+          <tr>{Array.from({ length: cols }).map((_, i) => (
+            <th key={i}><div className="skeleton" style={{ height: 11, width: 60 }} /></th>
+          ))}</tr>
+        </thead>
+        <tbody>
+          {Array.from({ length: 5 }).map((_, r) => (
+            <tr key={r}>
+              {Array.from({ length: cols }).map((_, c) => (
+                <td key={c}><div className="skeleton" style={{ height: 13, width: `${55 + (c * 13) % 35}%` }} /></td>
+              ))}
+            </tr>
           ))}
-        </tr>
-      </thead>
-      <tbody>
-        {Array.from({ length: 5 }).map((_, r) => (
-          <tr key={r} className="border-t border-slate-100 dark:border-slate-700">
-            {Array.from({ length: cols }).map((_, c) => (
-              <td key={c} className="px-4 py-3.5">
-                <div className="h-4 bg-slate-100 dark:bg-slate-700/50 rounded animate-pulse" style={{ width: `${60 + Math.random() * 40}%` }} />
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
+        </tbody>
+      </table>
+    </div>
+    <style>{T_STYLE}</style>
+  </>
 );
 
 export default Table;

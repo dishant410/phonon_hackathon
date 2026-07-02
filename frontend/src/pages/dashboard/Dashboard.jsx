@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import {
   AlertTriangle, Shield, CheckCircle, FileText,
-  Users, Activity, Percent, ArrowUpRight
+  Activity, Percent, ArrowUpRight
 } from 'lucide-react';
 import dashboardService from '../../services/dashboardService';
 import StatCard from '../../components/ui/StatCard';
 import Card from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
 import RiskHeatmap from '../../components/charts/RiskHeatmap';
 import ComplianceChart from '../../components/charts/ComplianceChart';
 
@@ -39,23 +40,27 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* Top Welcome Title */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Compliance & Risk Center</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">SOC 2 Type II & DPDP Act audit tracking control panel.</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', marginBottom: 4 }}>Compliance &amp; Risk Center</h1>
+            <p style={{ fontSize: 13.5, color: 'var(--text-muted)' }}>SOC 2 Type II &amp; DPDP Act audit tracking control panel.</p>
+          </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={Activity}
+            onClick={fetchDashboardData}
+          >
+            Refresh
+          </Button>
         </div>
-        <button
-          onClick={fetchDashboardData}
-          className="flex items-center gap-1.5 px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
-        >
-          <Activity size={15} /> Refresh Dashboard
-        </button>
       </div>
 
       {/* KPI Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16 }}>
         <StatCard
           title="Overall Compliance Score"
           value={stats ? `${stats.overallComplianceScore}%` : '0%'}
@@ -92,7 +97,7 @@ const Dashboard = () => {
       </div>
 
       {/* Dual Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(420px, 1fr))', gap: 18 }}>
         <Card>
           <Card.Header>
             <Card.Title>Compliance Score Trend</Card.Title>
@@ -115,35 +120,35 @@ const Dashboard = () => {
       </div>
 
       {/* DPDP Section highlights */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 18 }}>
+        <Card style={{ gridColumn: 'span 2' }}>
           <Card.Header>
             <Card.Title>Regulatory Compliance Bulletins</Card.Title>
           </Card.Header>
           <Card.Body>
-            <div className="space-y-4">
-              <div className="flex items-start gap-3.5 p-3 rounded-lg bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100/50 dark:border-indigo-800/30">
-                <div className="p-2 rounded bg-indigo-500/10 text-indigo-500">
-                  <FileText size={18} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: 12, borderRadius: 10, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)' }}>
+                <div style={{ padding: 8, borderRadius: 8, background: 'rgba(99,102,241,0.12)', color: '#6366f1', flexShrink: 0 }}>
+                  <FileText size={16} />
                 </div>
-                <div className="flex-1">
-                  <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center justify-between">
+                <div style={{ flex: 1 }}>
+                  <h4 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
                     DPDP Act Compliance Readiness
-                    <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-medium">New Act</span>
+                    <span style={{ fontSize: 10.5, padding: '1px 8px', borderRadius: 99, background: 'rgba(16,185,129,0.12)', color: '#10b981', fontWeight: 600 }}>New Act</span>
                   </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Section 7 is now mandatory. Ensure consent templates and logs of Consent Managers are digitized and stored in your Compliance Controls section.</p>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4, lineHeight: 1.55 }}>Section 7 is now mandatory. Ensure consent templates and logs of Consent Managers are digitized and stored in your Compliance Controls section.</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3.5 p-3 rounded-lg bg-slate-50/50 dark:bg-slate-800/30 border border-slate-200/50 dark:border-slate-700/30">
-                <div className="p-2 rounded bg-slate-500/10 text-slate-400">
-                  <FileText size={18} />
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: 12, borderRadius: 10, background: 'var(--bg-surface-2)', border: '1px solid var(--border)' }}>
+                <div style={{ padding: 8, borderRadius: 8, background: 'var(--nav-hover-bg)', color: 'var(--text-muted)', flexShrink: 0 }}>
+                  <FileText size={16} />
                 </div>
-                <div className="flex-1">
-                  <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                <div style={{ flex: 1 }}>
+                  <h4 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
                     SOC 2 Type II Testing Period
                   </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">The current testing window ends soon. Ensure all automated logging policies, database encryption and penetration test evidence reports are validated.</p>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4, lineHeight: 1.55 }}>The current testing window ends soon. Ensure all automated logging policies, database encryption and penetration test evidence reports are validated.</p>
                 </div>
               </div>
             </div>
@@ -154,19 +159,25 @@ const Dashboard = () => {
           <Card.Header>
             <Card.Title>Auditor Quicklinks</Card.Title>
           </Card.Header>
-          <Card.Body className="space-y-2">
-            <a href="/controls" className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-              <span className="text-sm text-slate-700 dark:text-slate-350">Control Mapping System</span>
-              <ArrowUpRight size={16} className="text-slate-400" />
-            </a>
-            <a href="/audit" className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-              <span className="text-sm text-slate-700 dark:text-slate-350">Evidence File Collector</span>
-              <ArrowUpRight size={16} className="text-slate-400" />
-            </a>
-            <a href="/privacy" className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-              <span className="text-sm text-slate-700 dark:text-slate-350">Obligations Checklist</span>
-              <ArrowUpRight size={16} className="text-slate-400" />
-            </a>
+          <Card.Body style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[['Control Mapping System', '/controls'], ['Evidence File Collector', '/audit'], ['Obligations Checklist', '/privacy']].map(([label, href]) => (
+              <a
+                key={href}
+                href={href}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '11px 14px', borderRadius: 10,
+                  border: '1px solid var(--border)',
+                  transition: 'background 0.15s, border-color 0.15s',
+                  textDecoration: 'none',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; e.currentTarget.style.borderColor = 'var(--border-strong)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'var(--border)'; }}
+              >
+                <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>{label}</span>
+                <ArrowUpRight size={14} style={{ color: 'var(--text-muted)' }} />
+              </a>
+            ))}
           </Card.Body>
         </Card>
       </div>
