@@ -1,39 +1,41 @@
 import React from 'react';
 
 const Card = ({ children, className = '', hover = false, padding = true, style = {} }) => (
-  <>
-    <div
-      className={`sc-card ${hover ? 'sc-card--hover' : ''} ${!padding ? 'sc-card--no-pad' : ''} ${className}`}
-      style={style}
-    >
-      {children}
-    </div>
+  <div
+    className={`sc-card ${hover ? 'sc-card--hover' : ''} ${!padding ? 'sc-card--no-padding' : ''} ${className}`}
+    style={style}
+  >
+    {children}
     <style>{`
       .sc-card {
-        background: #ffffff;
-        border: 1px solid #e8edf5;
-        border-radius: 16px;
-        box-shadow: 0 1px 4px rgba(15,23,42,0.05), 0 4px 16px rgba(15,23,42,0.03);
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
         padding: 22px;
-        transition: box-shadow 0.22s ease, transform 0.22s ease, border-color 0.22s ease;
+        transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
       }
       .sc-card--hover:hover {
-        box-shadow: 0 8px 30px rgba(15,23,42,0.10), 0 2px 8px rgba(15,23,42,0.05);
+        box-shadow: var(--shadow-md);
         transform: translateY(-2px);
-        border-color: #c7d2fe;
+        border-color: var(--border-strong);
       }
-      .sc-card--no-pad { padding: 0; }
+      .sc-card--no-padding {
+        padding: 0;
+      }
     `}</style>
-  </>
+  </div>
 );
 
 Card.Header = ({ children, className = '', actions }) => (
-  <div className={`sc-card-hdr ${className}`}>
+  <div className={`sc-card-header ${className}`}>
     <div style={{ flex: 1 }}>{children}</div>
     {actions && <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>{actions}</div>}
     <style>{`
-      .sc-card-hdr {
-        display: flex; align-items: flex-start; justify-content: space-between;
+      .sc-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
         margin-bottom: 18px;
       }
     `}</style>
@@ -41,13 +43,21 @@ Card.Header = ({ children, className = '', actions }) => (
 );
 
 Card.Title = ({ children, className = '' }) => (
-  <h3 className={className} style={{ fontSize: 14.5, fontWeight: 700, color: '#0f172a', letterSpacing: '-0.01em' }}>
+  <h3
+    className={className}
+    style={{
+      fontSize: '14.5px',
+      fontWeight: 600,
+      color: 'var(--text-primary)',
+      letterSpacing: '-0.01em',
+    }}
+  >
     {children}
   </h3>
 );
 
-Card.Body = ({ children, className = '', style = {} }) => (
-  <div className={className} style={style}>{children}</div>
+Card.Body = ({ children, className = '' }) => (
+  <div className={className}>{children}</div>
 );
 
 export default Card;

@@ -7,25 +7,27 @@ const DashboardLayout = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f0f4ff' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
       <Sidebar
         collapsed={collapsed}
         setCollapsed={setCollapsed}
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
       />
-
       <div
         style={{
           paddingLeft: collapsed ? '68px' : '240px',
           transition: 'padding-left 0.28s cubic-bezier(0.4,0,0.2,1)',
         }}
-        className="dash-content"
+        className="dashboard-content-area"
       >
         <Navbar setMobileOpen={setMobileOpen} />
         <main
           className="page-enter"
-          style={{ padding: '24px', minHeight: 'calc(100vh - 58px)' }}
+          style={{
+            padding: '24px',
+            minHeight: 'calc(100vh - 58px)',
+          }}
         >
           {children}
         </main>
@@ -33,7 +35,9 @@ const DashboardLayout = ({ children }) => {
 
       <style>{`
         @media (max-width: 1023px) {
-          .dash-content { padding-left: 0 !important; }
+          .dashboard-content-area {
+            padding-left: 0 !important;
+          }
         }
       `}</style>
     </div>

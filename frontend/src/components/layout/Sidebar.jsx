@@ -1,19 +1,19 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-  LayoutDashboard, Shield, AlertTriangle, FileSearch,
-  Lock, ScrollText, Users, ShieldCheck, PanelLeftClose, PanelLeftOpen,
+  LayoutDashboard, Shield, AlertTriangle, FileSearch, Lock, ScrollText,
+  Users, ShieldCheck, Menu, ChevronRight,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const navItems = [
-  { label: 'Dashboard',       icon: LayoutDashboard, to: '/dashboard',    roles: ['admin','security_manager','auditor','employee'] },
-  { label: 'Risk Register',   icon: AlertTriangle,   to: '/risks',         roles: ['admin','security_manager','auditor','employee'] },
-  { label: 'Controls',        icon: Shield,          to: '/controls',      roles: ['admin','security_manager','auditor','employee'] },
-  { label: 'Audit Evidence',  icon: FileSearch,      to: '/audit',         roles: ['admin','security_manager','auditor'] },
-  { label: 'Privacy (DPDP)', icon: Lock,            to: '/privacy',       roles: ['admin','security_manager','auditor'] },
-  { label: 'Policies',        icon: ScrollText,      to: '/policies',      roles: ['admin','security_manager','auditor'] },
-  { label: 'User Management', icon: Users,           to: '/admin/users',   roles: ['admin'] },
+  { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard', roles: ['admin', 'security_manager', 'auditor', 'employee'] },
+  { label: 'Risk Register', icon: AlertTriangle, to: '/risks', roles: ['admin', 'security_manager', 'auditor', 'employee'] },
+  { label: 'Controls', icon: Shield, to: '/controls', roles: ['admin', 'security_manager', 'auditor', 'employee'] },
+  { label: 'Audit Evidence', icon: FileSearch, to: '/audit', roles: ['admin', 'security_manager', 'auditor'] },
+  { label: 'Privacy', icon: Lock, to: '/privacy', roles: ['admin', 'security_manager', 'auditor'] },
+  { label: 'Policies', icon: ScrollText, to: '/policies', roles: ['admin', 'security_manager', 'auditor'] },
+  { label: 'User Management', icon: Users, to: '/admin/users', roles: ['admin'] },
 ];
 
 const NavItem = ({ item, collapsed }) => {
@@ -24,12 +24,19 @@ const NavItem = ({ item, collapsed }) => {
     <NavLink
       to={item.to}
       title={collapsed ? item.label : undefined}
-      className={({ isActive }) => `sb-nav-item ${isActive ? 'sb-nav-item--active' : ''} ${collapsed ? 'sb-nav-item--collapsed' : ''}`}
+      className={({ isActive }) =>
+        `nav-item ${isActive ? 'nav-item--active' : ''} ${collapsed ? 'nav-item--collapsed' : ''}`
+      }
     >
-      <span className="sb-nav-item__icon">
+      <span className="nav-item__icon">
         <item.icon size={17} />
       </span>
-      {!collapsed && <span className="sb-nav-item__label">{item.label}</span>}
+      {!collapsed && (
+        <>
+          <span className="nav-item__label">{item.label}</span>
+          <ChevronRight size={12} className="nav-item__arrow" />
+        </>
+      )}
     </NavLink>
   );
 };
@@ -40,212 +47,238 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
+          className="fixed inset-0 z-30 lg:hidden"
+          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
           onClick={() => setMobileOpen(false)}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 30,
-            background: 'rgba(15,23,42,0.35)',
-            backdropFilter: 'blur(4px)',
-          }}
-          className="lg:hidden"
         />
       )}
 
-      <aside className={`sb-root ${mobileOpen ? 'sb-root--open' : 'sb-root--closed'} ${collapsed ? 'sb-root--collapsed' : ''}`}>
-        {/* Logo / Brand */}
-        <div className="sb-brand">
-          <div className="sb-brand__icon">
-            <ShieldCheck size={17} color="#4f46e5" />
+      <aside
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          height: '100%',
+          zIndex: 40,
+          display: 'flex',
+          flexDirection: 'column',
+          width: collapsed ? '68px' : '240px',
+          background: 'var(--sidebar-bg)',
+          borderRight: '1px solid var(--sidebar-border)',
+          transition: 'width 0.28s cubic-bezier(0.4,0,0.2,1), transform 0.28s cubic-bezier(0.4,0,0.2,1)',
+          transform: mobileOpen ? 'translateX(0)' : undefined,
+          boxShadow: 'var(--shadow-md)',
+          overflow: 'hidden',
+        }}
+        className={!mobileOpen ? 'sidebar-mobile-hidden' : ''}
+      >
+        {/* Logo */}
+        <div className="sidebar-logo">
+          <div className="sidebar-logo__icon">
+            <ShieldCheck size={16} color="#fff" />
           </div>
           {!collapsed && (
-            <div className="sb-brand__text">
-              <span className="sb-brand__name">SecureComply</span>
-              <span className="sb-brand__sub">GRC Platform</span>
+            <div className="sidebar-logo__text">
+              <span className="sidebar-logo__name">SecureComply</span>
+              <span className="sidebar-logo__sub">GRC Platform</span>
             </div>
           )}
         </div>
 
-        {/* Nav section label */}
-        {!collapsed && <p className="sb-section-label">Menu</p>}
+        {/* Navigation label */}
+        {!collapsed && (
+          <p className="sidebar-section-label">Navigation</p>
+        )}
 
-        {/* Navigation */}
-        <nav className="sb-nav">
-          {navItems.map((item, i) => (
-            <div
-              key={item.to}
-              className="slide-in"
-              style={{ animationDelay: `${i * 0.04}s` }}
-            >
-              <NavItem item={item} collapsed={collapsed} />
-            </div>
+        {/* Nav items */}
+        <nav className="sidebar-nav">
+          {navItems.map((item) => (
+            <NavItem key={item.to} item={item} collapsed={collapsed} />
           ))}
         </nav>
 
-        {/* Footer: collapse toggle */}
-        <div className="sb-footer">
+        {/* Collapse toggle */}
+        <div className="sidebar-footer">
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="sb-collapse-btn"
+            className="sidebar-collapse-btn"
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {collapsed
-              ? <PanelLeftOpen size={16} />
-              : <><PanelLeftClose size={16} /><span>Collapse</span></>
-            }
+            <Menu size={15} />
+            {!collapsed && <span>Collapse</span>}
           </button>
         </div>
       </aside>
 
       <style>{`
-        .sb-root {
-          position: fixed;
-          top: 0; left: 0;
-          height: 100%;
-          z-index: 40;
-          display: flex;
-          flex-direction: column;
-          background: #ffffff;
-          border-right: 1px solid #e8edf5;
-          box-shadow: 4px 0 24px rgba(15,23,42,0.05);
-          transition: width 0.28s cubic-bezier(0.4,0,0.2,1),
-                      transform 0.28s cubic-bezier(0.4,0,0.2,1);
-          overflow: hidden;
+        .sidebar-mobile-hidden {
+          transform: translateX(-100%);
         }
-        .sb-root--closed { transform: translateX(-100%); }
-        .sb-root--open   { transform: translateX(0); }
-        .sb-root--collapsed { width: 68px; }
-        :not(.sb-root--collapsed).sb-root { width: 240px; }
         @media (min-width: 1024px) {
-          .sb-root--closed  { transform: translateX(0); }
+          .sidebar-mobile-hidden {
+            transform: translateX(0) !important;
+          }
         }
 
-        /* Brand */
-        .sb-brand {
+        .sidebar-logo {
           display: flex;
           align-items: center;
-          gap: 11px;
-          padding: 18px 16px 16px;
-          border-bottom: 1px solid #f1f5f9;
+          gap: 12px;
+          padding: 20px 16px 16px;
+          border-bottom: 1px solid var(--sidebar-border);
           flex-shrink: 0;
         }
-        .sb-brand__icon {
-          width: 36px; height: 36px;
-          background: #eef2ff;
+
+        .sidebar-logo__icon {
+          width: 34px;
+          height: 34px;
           border-radius: 10px;
-          display: flex; align-items: center; justify-content: center;
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
           flex-shrink: 0;
-          border: 1.5px solid #e0e7ff;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          box-shadow: 0 4px 12px rgba(99,102,241,0.4);
         }
-        .sb-brand__icon:hover {
-          transform: scale(1.08);
-          box-shadow: 0 4px 12px rgba(79,70,229,0.20);
-        }
-        .sb-brand__name {
-          display: block;
-          font-size: 14px; font-weight: 700;
-          color: #0f172a; letter-spacing: -0.02em;
+
+        .sidebar-logo__text {
+          overflow: hidden;
           white-space: nowrap;
         }
-        .sb-brand__sub {
+
+        .sidebar-logo__name {
           display: block;
-          font-size: 10px; font-weight: 600;
-          color: #94a3b8;
-          text-transform: uppercase; letter-spacing: 0.08em;
+          font-size: 14px;
+          font-weight: 700;
+          color: var(--text-primary);
+          letter-spacing: -0.02em;
+        }
+
+        .sidebar-logo__sub {
+          display: block;
+          font-size: 10px;
+          font-weight: 500;
+          color: var(--text-muted);
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
           margin-top: 1px;
         }
 
-        /* Section label */
-        .sb-section-label {
-          font-size: 10px; font-weight: 700;
-          color: #cbd5e1;
-          text-transform: uppercase; letter-spacing: 0.10em;
+        .sidebar-section-label {
+          font-size: 10px;
+          font-weight: 600;
+          color: var(--text-muted);
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
           padding: 16px 18px 6px;
-          flex-shrink: 0;
         }
 
-        /* Nav */
-        .sb-nav {
+        .sidebar-nav {
           flex: 1;
           overflow-y: auto;
-          padding: 4px 10px 10px;
+          padding: 4px 10px 12px;
           display: flex;
           flex-direction: column;
           gap: 2px;
         }
 
-        /* Nav item */
-        .sb-nav-item {
+        .nav-item {
+          position: relative;
           display: flex;
           align-items: center;
           gap: 10px;
-          padding: 9px 11px;
+          padding: 9px 10px;
           border-radius: 10px;
           font-size: 13.5px;
           font-weight: 500;
-          color: #64748b;
-          text-decoration: none;
+          color: var(--text-secondary);
           transition: all 0.15s ease;
+          cursor: pointer;
           white-space: nowrap;
-          position: relative;
           overflow: hidden;
+          text-decoration: none;
         }
-        .sb-nav-item::before {
-          content: '';
-          position: absolute;
-          left: 0; top: 50%;
-          transform: translateY(-50%) scaleY(0);
-          width: 3px; height: 65%;
-          background: #4f46e5;
-          border-radius: 0 3px 3px 0;
-          transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+
+        .nav-item:hover {
+          background: var(--nav-hover-bg);
+          color: var(--text-primary);
         }
-        .sb-nav-item:hover {
-          background: #f8fafc;
-          color: #1e293b;
-        }
-        .sb-nav-item--active {
-          background: #eef2ff;
-          color: #4f46e5;
+
+        .nav-item--active {
+          background: var(--nav-active-bg);
+          color: var(--nav-active-text);
           font-weight: 600;
         }
-        .sb-nav-item--active::before {
-          transform: translateY(-50%) scaleY(1);
+
+        .nav-item--active::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 3px;
+          height: 60%;
+          border-radius: 0 3px 3px 0;
+          background: var(--accent);
         }
-        .sb-nav-item__icon {
-          display: flex; align-items: center; justify-content: center;
-          width: 20px; height: 20px; flex-shrink: 0;
+
+        .nav-item__icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          width: 20px;
+          height: 20px;
         }
-        .sb-nav-item__label {
+
+        .nav-item__label {
           flex: 1;
-          overflow: hidden; text-overflow: ellipsis;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
-        .sb-nav-item--collapsed {
+
+        .nav-item__arrow {
+          opacity: 0;
+          color: var(--text-muted);
+          transition: opacity 0.15s, transform 0.15s;
+        }
+
+        .nav-item:hover .nav-item__arrow,
+        .nav-item--active .nav-item__arrow {
+          opacity: 1;
+          transform: translateX(1px);
+        }
+
+        .nav-item--collapsed {
           justify-content: center;
           padding: 10px;
         }
 
-        /* Footer */
-        .sb-footer {
-          border-top: 1px solid #f1f5f9;
-          padding: 10px;
+        .sidebar-footer {
           flex-shrink: 0;
+          border-top: 1px solid var(--sidebar-border);
+          padding: 10px;
         }
-        .sb-collapse-btn {
-          display: flex; align-items: center; gap: 8px;
+
+        .sidebar-collapse-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
           width: 100%;
           padding: 8px 10px;
           border-radius: 8px;
           border: none;
           background: transparent;
-          color: #94a3b8;
-          font-size: 13px; font-weight: 500;
+          color: var(--text-muted);
+          font-size: 13px;
+          font-weight: 500;
           cursor: pointer;
-          font-family: inherit;
-          transition: all 0.15s;
+          transition: all 0.15s ease;
         }
-        .sb-collapse-btn:hover {
-          background: #f8fafc;
-          color: #4f46e5;
+
+        .sidebar-collapse-btn:hover {
+          background: var(--nav-hover-bg);
+          color: var(--text-primary);
         }
       `}</style>
     </>
